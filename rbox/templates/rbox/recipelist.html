@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>List of recipes</title>
+  </head>
+  <body>
+    <h1>Recipes</h1>
+      <ul>
+        {% for recipe in object_list.all %}
+          <li>
+            <a href="/rbox/recipe/{{recipe.id}}/" target="_blank" rel="noreferrer noopener">
+              {{recipe.name}}
+            </a>
+          </li>
+        {%endfor%}
+      </ul>
+    </body>
+  </html>

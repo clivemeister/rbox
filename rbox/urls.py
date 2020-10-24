@@ -6,7 +6,7 @@ urlpatterns = [
     # matches /rbox/
     path('', views.index, name='index'),
     # matches /rbox/recipelist/
-    path('', views.recipeList, name='recipelist'),
-    # matches /rbox/5/recipe
-    path('<int:recipe_id>/recipe/', views.recipeDetail, name='recipe'),
+    path('recipelist/', views.recipeListView.as_view(), name='recipes'),
+    # matches /rbox/recipe/5
+    path('recipe/<int:recipe_id>/', views.recipeDetail, name='recipe'),
 ]

@@ -79,7 +79,7 @@ class Recipe(models.Model):
         VERY_EASY = 5
 
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,db_index=True)
     instructions = models.TextField()
     created = models.DateField(blank=True,null=True)
     notes = models.CharField(max_length=200,blank=True,default="")
