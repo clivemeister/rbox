@@ -40,7 +40,7 @@ class Ingredient(models.Model):
 
 class IngredientLine(models.Model):
     """
-    IngredientLines are each found in one Recepies, and each refer to zero or one Ingredients
+    IngredientLines are each found in one Recipis, and each refer to zero or one Ingredients
 
     """
     line_order = models.SmallIntegerField()
@@ -69,6 +69,7 @@ class Recipe(models.Model):
         FOUR_STAR = 4
         FIVE_STAR = 5
 
+
     class EffortRatings(models.IntegerChoices):
         UNRATED = 0
         VERY_HARD = 1
@@ -76,6 +77,7 @@ class Recipe(models.Model):
         MODERATE = 3
         EASY = 4
         VERY_EASY = 5
+
 
     name = models.CharField(max_length=100)
     instructions = models.TextField()
@@ -87,6 +89,11 @@ class Recipe(models.Model):
     total_minutes = models.PositiveSmallIntegerField(default=0)
     categories = models.ManyToManyField(Category)
     source = models.CharField(max_length=200,blank=True,default="")
+
+    def taste_stars(self):
+        return '*'*self.taste_score if self.taste_score>0 else '-'
+    def effort_stars(self):
+        return '*'*self.effort_score if self.effort_score>0 else '-'
 
     def __str__(self):
         return self.name
