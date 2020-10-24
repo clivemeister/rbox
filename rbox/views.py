@@ -14,5 +14,6 @@ def recipeDetail(request,recipe_id):
 
 class recipeListView(generic.ListView):
     model = Recipe
+    paginate_by = 100
     template_name = 'rbox/recipelist.html'  # default would be recipe_list, I think
     queryset = Recipe.objects.order_by(Lower('name')) # do this to sort in caseless name order

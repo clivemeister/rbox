@@ -69,7 +69,6 @@ class Recipe(models.Model):
         FOUR_STAR = 4
         FIVE_STAR = 5
 
-
     class EffortRatings(models.IntegerChoices):
         UNRATED = 0
         VERY_HARD = 1
@@ -77,7 +76,6 @@ class Recipe(models.Model):
         MODERATE = 3
         EASY = 4
         VERY_EASY = 5
-
 
     name = models.CharField(max_length=100,db_index=True)
     instructions = models.TextField()

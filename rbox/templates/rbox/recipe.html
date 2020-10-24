@@ -1,21 +1,30 @@
-<h1>{{ recipe.name }}</h1>
-<h3>Ingredient List</h3>
-<ul>
-  {% for i_line in recipe.ingredientline_set.all %}
-    <li>{{i_line}}</li>
-  {%endfor%}
-</ul>
-<hr>
-<h3>Instructions</h3>
-<p>{{ recipe.instructions }}</p>
-<hr>
-<p><b>Notes:</b>&nbsp;&nbsp;{{ recipe.notes}}</p>
-<p>
-  <b>Taste: {{recipe.taste_stars}} &nbsp;&nbsp; Effort: {{recipe.effort_stars}}
-  </b>
-</p>
-<p><b>Categories:</b>&nbsp;
-  {% for c in recipe.categories.all %}
-    {{c}};&nbsp;
-  {%endfor%}
-</p>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Recipe: {{recipe.name}}</title>
+  </head>
+  <body>
+    <h1>{{ recipe.name }}</h1>
+    <h3>Ingredient List</h3>
+    <ul>
+      {% for i_line in recipe.ingredientline_set.all %}
+      <li>{{i_line}}</li>
+      {%endfor%}
+    </ul>
+    <hr>
+    <h3>Instructions</h3>
+    <p>{{ recipe.instructions }}</p>
+    <hr>
+    <p><b>Notes:</b>&nbsp;&nbsp;{{ recipe.notes}}</p>
+    <p>
+      <b>Taste: {{recipe.taste_stars}} &nbsp;&nbsp; Effort: {{recipe.effort_stars}}
+      </b>
+    </p>
+    <p><b>Categories:</b>&nbsp;
+      {% for c in recipe.categories.all %}
+      {{c}};&nbsp;
+      {%endfor%}
+    </p>
+  </body>
+</html>
