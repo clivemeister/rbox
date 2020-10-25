@@ -6,10 +6,18 @@
   </head>
   <body>
     <h1>Recipes</h1>
+      <form action="{% url 'rbox:recipe-search' %}" method="get">
+        {% csrf_token %}
+        <input type="text" name="search_string">
+        <input type="submit" name="go_filter_receipes">
+      </form>
+      <p>Showing recipes containing {{ search_term }}</p>
+      <p>Called as {{calling_url}}</p>
       <ul>
-        {% for recipe in object_list.all %}
+        {% for recipe in recipes_list.all %}
           <li>
-            <a href="/rbox/recipe/{{recipe.id}}/" target="_blank" rel="noreferrer noopener">
+            <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
+            <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
               {{recipe.name}}
             </a>
           </li>
@@ -17,7 +25,7 @@
 
         <br>
         <br>
-        
+
         <div class="pagination">
           <span class="step-links">
             {% if page_obj.has_previous %}
