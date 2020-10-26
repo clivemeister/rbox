@@ -40,12 +40,17 @@ class recipeListView(generic.ListView):
 
     def get_queryset(self):
         if self.search_term!='anything':
-            query_set = self.model.objects.filter(name__icontains=self.search_term)
+            query_set = self.model.objects.filter(name__icontains=self.search_term).order_by(Lower('name').asc())
         else:
-            query_set = self.model.objects.all()
+            query_set = self.model.objects.all().order_by(Lower('name').asc())
         return query_set
 
 def recipeSearch(request):
-    search_string = request.GET['search_string']
-    new_url = reverse('rbox:recipe-sublist',args=[search_string])
+    search_title = request.GET['search_title']
+    search_ingredient = request.GET['search_ingredient']
+    if len(search_title)>0:
+        new_url = reverse('rbox:recipe-sublist',args=[search_title])
+    else:
+        # nothing to search for - return full list
+        new_url = reverse('rbox:recipe-list')
     return HttpResponseRedirect(new_url)

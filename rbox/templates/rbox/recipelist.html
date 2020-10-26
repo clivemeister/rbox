@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      th {
+        text-align:left
+      }
+    </style>
     <meta charset="utf-8">
     <title>List of recipes</title>
   </head>
@@ -8,21 +13,37 @@
     <h1>Recipes</h1>
       <form action="{% url 'rbox:recipe-search' %}" method="get">
         {% csrf_token %}
-        <input type="text" name="search_string">
+        <label for=="title">Title contains:</label>
+          <input id="title" type="text" name="search_title">
+        or <label for="ingr">Ingredients contain:</label>
+          <input id="ingr" type="text" name="search_ingredient">
+        <br>
         <input type="submit" name="go_filter_receipes">
       </form>
       <p>Showing recipes containing {{ search_term }}</p>
       <p>Called as {{calling_url}}</p>
-      <ul>
+      <table>
+        <col style="width:70%">
+        <col style="width:15%">
+        <col style="width:15%">
+        <tr>
+          <th>Name</th>
+          <th>Taste</th>
+          <th>Effort</th>
+        </tr>
         {% for recipe in recipes_list.all %}
-          <li>
-            <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
-            <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
-              {{recipe.name}}
-            </a>
-          </li>
+          <tr>
+            <td>
+              <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
+              <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
+                {{recipe.name}}
+              </a>
+            </td>
+            <td>{{recipe.taste_stars}}</td>
+            <td>{{recipe.effort_stars}}</td>
+          </tr>
         {%endfor%}
-
+        </table>
         <br>
         <br>
 
