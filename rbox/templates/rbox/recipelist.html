@@ -13,15 +13,43 @@
     <h1>Recipes</h1>
       <form action="{% url 'rbox:recipe-search' %}" method="get">
         {% csrf_token %}
-        <label for=="title">Title contains:</label>
-          <input id="title" type="text" name="search_title">
-        or <label for="ingr">Ingredients contain:</label>
+        <label for="name">Name contains:</label>
+          <input id="name" type="text" name="search_name">
+        and <label for="ingr">ingredients contain:</label>
           <input id="ingr" type="text" name="search_ingredient">
+        <br>
+        <label for="taste">Taste rating:</label>
+          <select id="taste" name="search_taste">
+            <option value="">&nbsp.</option>
+            <option value=0>None</option>
+            <option value=1>*</option>
+            <option value=2>**</option>
+            <option value=3>***</option>
+            <option value=4>****</option>
+            <option value=5>*****</option>
+          </select>
+        and <label for="effort">Effort rating:</label>
+          <select id="effort" name="search_effort">
+            <option value="">&nbsp.</option>
+            <option value=0>None</option>
+            <option value=1>Very complex</option>
+            <option value=2>Complex</option>
+            <option value=3>Moderate</option>
+            <option value=4>Easy</option>
+            <option value=5>Very Easy</option>
+          </select>
+        and <label for="category">Category:</label>
+          <select id="category" name="search_category">
+            <option value="">&nbsp.</option>
+            {% for c in category_list %}
+              <option value="{{c.tag}}">{{c.tag}}</option>
+            {% endfor %}
+            </select>
         <br>
         <input type="submit" name="go_filter_receipes">
       </form>
-      <p>Showing recipes containing {{ search_term }}</p>
-      <p>Called as {{calling_url}}</p>
+      <hr>
+      <p>Showing recipes containing {{ searchstring }}</p>
       <table>
         <col style="width:70%">
         <col style="width:15%">
