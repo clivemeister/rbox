@@ -73,10 +73,12 @@ class recipeListView(generic.ListView):
         return context
 
 
-class RecipeCreate(generic.edit.CreateView):
+class recipeCreate(generic.edit.CreateView):
     model = Recipe
     template_name_suffix = '_create'
-    fields = ['name','']
+    fields = ['name','instructions',
+              'taste_score','effort_score','active_minutes','total_minutes',
+              'notes','categories','created','source']
 
 
 ### I think this is now redunant...

@@ -13,5 +13,7 @@ urlpatterns = [
     # matches /rbox/recipe/5
     path('recipe/<int:recipe_id>/', views.recipeDetail, name='recipe-in-detail'),
     # matches /rbox/recipesearch/
-    path('recipesearch', views.recipeListView.as_view(), name='recipe-search')
+    path('recipesearch', views.recipeListView.as_view(), name='recipe-search'),
+    # matches /rbox/recipe_add/
+    path('recipe/add/',views.recipeCreate.as_view(),name='recipe-add'),
 ]
