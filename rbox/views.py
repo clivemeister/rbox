@@ -5,10 +5,9 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse
 
-import logging
-
 from .models import Recipe, IngredientLine, Ingredient, Category
 
+import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
@@ -60,7 +59,8 @@ class recipeListView(generic.ListView):
         if self.searchTerm_category !='':
             filters &= models.Q(categories__tag=self.searchTerm_category)
             self.searchstring += (" and category " if self.searchstring!="" else "Effort ")+self.searchTerm_category
-
+        logging.debug(filters)
+        # Return the result of the stacked query against all the Recipe objects
         return self.model.objects.filter(filters).order_by(Lower('name').asc())
 
     def get_context_data(self, **kwargs):
@@ -73,18 +73,24 @@ class recipeListView(generic.ListView):
         return context
 
 
+class RecipeCreate(generic.edit.CreateView):
+    model = Recipe
+    template_name_suffix = '_create'
+    fields = ['name','']
 
-def recipeSearch(request):
-    """
-    Invoked as /recipeSearch URL, by user hitting "Submit" on recipe list.
-    Get the search terms that were submitted, and redirect to recipe list URL to show
-    appropriate subset of the full recipe list (or the full list, if no search terms)
-    """
-    search_title = request.GET['search_title']
-    search_ingredient = request.GET['search_ingredient']
-    if len(search_title)>0:
-        new_url = reverse('rbox:recipe-sublist',args=[search_title])
-    else:
-        # nothing to search for - return full list
-        new_url = reverse('rbox:recipe-list')
-    return HttpResponseRedirect(new_url)
+
+### I think this is now redunant...
+#def recipeSearch(request):
+#    """
+#    Invoked as /recipeSearch URL, by user hitting "Submit" on recipe list.
+#    Get the search terms that were submitted, and redirect to recipe list URL to show
+#    appropriate subset of the full recipe list (or the full list, if no search terms)
+#    """
+#    search_title = request.GET['search_title']
+#    search_ingredient = request.GET['search_ingredient']
+#    if len(search_title)>0:
+#        new_url = reverse('rbox:recipe-sublist',args=[search_title])
+#    else:
+#        # nothing to search for - return full list
+#        new_url = reverse('rbox:recipe-list')
+#    return HttpResponseRedirect(new_url)
