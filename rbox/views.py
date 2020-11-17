@@ -86,7 +86,6 @@ class recipeCreate(generic.edit.CreateView):
 
 def recipe_modify(request,recipe_id):
     recipe = get_object_or_404(Recipe,pk=recipe_id)
-
     # Create a class to generate formsets for the ingredientsList
     IL_FormSet = inlineformset_factory(Recipe, IngredientLine,
                     form=IngredientLineForm,
@@ -95,7 +94,6 @@ def recipe_modify(request,recipe_id):
                     can_order=True,
                     can_delete=True,
                  )
-
     if request.method == 'POST':
         # User has hit OK on recipe.  Save the info.
         print("POSTed ingredient list and recipe <%s> after editing"%(recipe.name),flush=True)
@@ -112,18 +110,15 @@ def recipe_modify(request,recipe_id):
             from django.template import loader
             t = loader.get_template('rbox/edit_done.html')
             return HttpResponse(t.render({'url':target_url},request), content_type='text/html')
-
     else:
         # We are loading a recipe for modification
         print("GETting ingredient list and recipe <%s> for editing"%(recipe.name),flush=True)
         ingredients_formset = IL_FormSet(instance=recipe)
         recipe_form = RecipeForm(instance=recipe)
-
     context = {
         'ingredients_formset': ingredients_formset,
         'recipe' : recipe_form,
     }
-
     return render(request,'rbox/recipe_modify.html', context)
 
 """

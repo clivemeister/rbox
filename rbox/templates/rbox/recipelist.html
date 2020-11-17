@@ -48,7 +48,6 @@
         <br>
         <input type="submit" name="go_filter_receipes">
       </form>
-
       <p>Showing recipes containing {{ searchstring }}</p>
       <div id="container" style="width:100%">
         <div id="left" style="float:left; width:50%">
@@ -65,7 +64,7 @@
               <tr>
                 <td>
                   <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
-                  <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
+                  <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="view_recipe" rel="noreferrer noopener">
                     {{recipe.name}}
                   </a>
                 </td>
@@ -74,8 +73,7 @@
               </tr>
             {%endfor%}
           </table>
-          <br>
-          <br>
+          <br><br>
           <div class="pagination">
             <span class="step-links">
               {% if page_obj.has_previous %}
@@ -93,12 +91,12 @@
               {% endif %}
             </span>
           </div>
-        </div>
+        </div> <!-- end of left-hand side of view, the table with list of recipes -->
         <div id="right" style="float:right; width:50%">
-          <iframe src="http://127.0.0.1:8000/rbox/recipe/1/" height="500px" width="500px" Content-Security-Policy: frame-ancestors 'self'>
+          <iframe src="" name="view_recipe" height="500px" width="500px" Content-Security-Policy: frame-ancestors 'self'>
             <p>The browser does not support iframes</p>
           </iframe>
-        </div>
+        </div> <!-- end of right-hand side of view, the iframe with recipe -->
       </div>
     </body>
   </html>
