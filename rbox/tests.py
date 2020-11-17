@@ -20,14 +20,19 @@ class QueryTestCase(TestCase):
         ing_3 = Ingredient.objects.create(name='ingredient 3',dept=dept_2)
         ing_4 = Ingredient.objects.create(name='ingredient 4',dept=dept_2)
 
-        r_1=Recipe.objects.create(name='lemon meringue pie',
+        self.r_1=Recipe.objects.create(name='lemon meringue pie',
             instructions='instructions 1',
             taste_score=4,
             effort_score=4,
             source="Source One"
         )
-        ingLine_1_1 = IngredientLine.objects.create(line_order=1,ingredient=ing_1,containing_recipe=r_1)
-        ingLine_1_2 = IngredientLine.objects.create(line_order=2,ingredient=ing_2,containing_recipe=r_1)
+        self.ingLine_1_3 = IngredientLine.objects.create(line_order=3,ingredient=ing_3,
+                                                        quantity=750,quantity_unit="grams",
+                                                        containing_recipe=self.r_1)
+        self.ingLine_1_1 = IngredientLine.objects.create(line_order=1,ingredient=ing_1,containing_recipe=self.r_1)
+        self.ingLine_1_2 = IngredientLine.objects.create(line_order=2,ingredient=ing_2,
+                                                                quantity=1.5,quantity_unit="kilos",
+                                                                containing_recipe=self.r_1)
 
         r_2=Recipe.objects.create(name='lemon drizzle cake',
             instructions='instructions 2',
@@ -81,3 +86,9 @@ class QueryTestCase(TestCase):
         r_lst = list(recip_list)
         self.assertEqual(1,len(r_lst))
         self.assertEqual(r_lst[0].name,'lemon meringue pie')  # this should be only recipe
+
+    def test_get_ingredientslist_in_order(self):
+        il = self.r_1.get_ordered_ingredients_list()
+        self.assertEqual(il[0],'1.00  ingredient 1 ')
+        self.assertEqual(il[1],'1.50 kilos ingredient 2 ')
+        self.assertEqual(il[2],'750.00 grams ingredient 3 ')

@@ -21,6 +21,9 @@
       <b>Taste: {{recipe.taste_stars}} &nbsp;&nbsp; Effort: {{recipe.effort_stars}}
       </b>
     </p>
+    <p>
+      <b>Active time:</b> {{recipe.active_minutes}} mins &nbsp;&nbsp; <b>Total time:</b> {{recipe.total_minutes}} mins
+    </p>
     <p><b>Categories:</b>&nbsp;
       {% for c in recipe.categories.all %}
       {{c}};&nbsp;

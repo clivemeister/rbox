@@ -1,12 +1,15 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404,render
+from django.shortcuts import get_object_or_404,render,redirect
 from django.views import generic
 from django.db import models
 from django.db.models.functions import Lower
-from django.urls import reverse
+from django.urls import reverse, resolve
+from django.forms import modelformset_factory,ModelForm,inlineformset_factory
 
 from .models import Recipe, IngredientLine, Ingredient, Category
+from .forms import IngredientLineForm, RecipeForm, IngredientLineFormFormSet
 
+import sys
 import logging
 logger = logging.getLogger(__name__)
 
@@ -16,6 +19,7 @@ def index(request):
 def recipeDetail(request,recipe_id):
     recipe = get_object_or_404(Recipe,pk=recipe_id)
     return render(request, 'rbox/recipe.html', {'recipe': recipe})
+
 
 class recipeListView(generic.ListView):
     model = Recipe
@@ -80,19 +84,68 @@ class recipeCreate(generic.edit.CreateView):
               'taste_score','effort_score','active_minutes','total_minutes',
               'notes','categories','created','source']
 
+def recipe_modify(request,recipe_id):
+    recipe = get_object_or_404(Recipe,pk=recipe_id)
 
-### I think this is now redunant...
-#def recipeSearch(request):
-#    """
-#    Invoked as /recipeSearch URL, by user hitting "Submit" on recipe list.
-#    Get the search terms that were submitted, and redirect to recipe list URL to show
-#    appropriate subset of the full recipe list (or the full list, if no search terms)
-#    """
-#    search_title = request.GET['search_title']
-#    search_ingredient = request.GET['search_ingredient']
-#    if len(search_title)>0:
-#        new_url = reverse('rbox:recipe-sublist',args=[search_title])
-#    else:
-#        # nothing to search for - return full list
-#        new_url = reverse('rbox:recipe-list')
-#    return HttpResponseRedirect(new_url)
+    # Create a class to generate formsets for the ingredientsList
+    IL_FormSet = inlineformset_factory(Recipe, IngredientLine,
+                    form=IngredientLineForm,
+                    formset=IngredientLineFormFormSet,
+                    extra=1,
+                    can_order=True,
+                    can_delete=True,
+                 )
+
+    if request.method == 'POST':
+        # User has hit OK on recipe.  Save the info.
+        print("POSTed ingredient list and recipe <%s> after editing"%(recipe.name),flush=True)
+        recipe_form = RecipeForm(request.POST, instance=recipe) #use existing instance to cause update, not create, on save
+        ingredients_formset = IL_FormSet(request.POST, instance=recipe)
+        if recipe_form.is_valid() and ingredients_formset.is_valid():
+            recipe_form.save()
+            ingredients_formset.save()
+            print("Saved the edit, so acknowledge and redirect")
+            target_url = reverse('rbox:recipe-modify', args=(recipe_id,))
+            print("url=",target_url)
+
+            from django.http import HttpResponse
+            from django.template import loader
+            t = loader.get_template('rbox/edit_done.html')
+            return HttpResponse(t.render({'url':target_url},request), content_type='text/html')
+
+    else:
+        # We are loading a recipe for modification
+        print("GETting ingredient list and recipe <%s> for editing"%(recipe.name),flush=True)
+        ingredients_formset = IL_FormSet(instance=recipe)
+        recipe_form = RecipeForm(instance=recipe)
+
+    context = {
+        'ingredients_formset': ingredients_formset,
+        'recipe' : recipe_form,
+    }
+
+    return render(request,'rbox/recipe_modify.html', context)
+
+"""
+def recipeEdited(request,url):
+    return render(request, 'rbox/edit_done.html', {'url': url})
+
+
+def ingredientList_addform(request):
+    ingr_lines = IngredientLine.objects.filter(containing_recipe__name=recipe_name).order_by('line_order')
+    IL_FormSet = modelformset_factory(IngredientLine,
+                    form=IngredientLineForm,
+                    extra=0,
+                 )
+    formset = IL_FormSet(queryset=ingr_lines)
+    # if request.method == "POST":
+    #     formset = IL_FormSet(request.POST)
+    #     if formset.is_valid():
+    #         print("saving valid formset",flush=True)
+    #         #save it
+    #         pass
+    # else:
+    #     print("not a POST request to get here",flush=True)
+    #     formset = IL_FormSet(queryset = IngredientLine.objects.asc())
+    return render(request,'rbox\ingredientlist.html',{'formset': formset})
+"""

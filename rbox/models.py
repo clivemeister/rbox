@@ -2,8 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Department(models.Model):
-    """
-    Departments are locations/aisles in a store where ingredients may be found - fruit, frozen, etc
+    """Departments are locations/aisles in a store where ingredients may be found - fruit/veg, frozen, etc
     """
     dept = models.CharField(max_length=25)
 
@@ -12,8 +11,7 @@ class Department(models.Model):
 
 
 class Category(models.Model):
-    """
-    Categories are tags for receipes - vegetarian, lunch, etc.
+    """Categories are tags for receipes - vegetarian, lunch, etc.
     There is a many-to-many relationship between Category and Receipe
     """
     tag = models.CharField(max_length=50)
@@ -23,9 +21,8 @@ class Category(models.Model):
 
 
 class Ingredient(models.Model):
-    """
-    Ingredients are names of constituient food items - onion, tin of sweetcorn, etc
-    They have an optional Department where you buy them in a shop
+    """Ingredients are names of constituient food items - onion, tin of sweetcorn, etc
+    They have an optional Department (where you buy them in a shop)
     """
     name = models.CharField(max_length=50)
     dept = models.ForeignKey(Department,
@@ -37,24 +34,24 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
-
+HYPEN_LINE_ID=10
 class IngredientLine(models.Model):
-    """
-    IngredientLines are each found in one Recipis, and each refer to zero or one Ingredients
-
+    """IngredientLines are each found in one Recipes, and each refer to zero or one Ingredients
+    Each line has an associated Recipe, a line order to show where it appears in that Recipe's ingredient list,
+    an Ingredient field (linked to that model), and an optional quantity, unit for that quantity, and prep notes
     """
     line_order = models.SmallIntegerField()
     ingredient = models.ForeignKey('Ingredient',
-        default='---',
+        default=HYPEN_LINE_ID,
         null=True,
         on_delete=models.SET_DEFAULT
     )
     containing_recipe = models.ForeignKey('Recipe',
         on_delete=models.CASCADE
     )
-    quantity = models.DecimalField(decimal_places=2,max_digits=5,blank=True,default=1)
+    quantity = models.DecimalField(decimal_places=2,max_digits=5,blank=True,default=0)
     quantity_unit = models.CharField(max_length=25,blank=True,default="")
-    prep_notes = models.CharField(max_length=200,blank=True)
+    prep_notes = models.CharField(max_length=200,blank=True,default="")
 
     def __str__(self):
         return str(self.quantity)+" "+str(self.quantity_unit)+" "+str(self.ingredient)+" "+self.prep_notes
@@ -92,6 +89,19 @@ class Recipe(models.Model):
         return '*'*self.taste_score if self.taste_score>0 else '-'
     def effort_stars(self):
         return '*'*self.effort_score if self.effort_score>0 else '-'
+
+    def get_ordered_ingredients_list(self):
+        """
+        Return a list of strings, each of which is one of the IngredientLines for this recipe
+        """
+        ingredientsList = list()
+        for IL in self.ingredientline_set.order_by('line_order').all():
+            ingredientsList.append(str(IL))
+        return ingredientsList
+
+    def save(self, *args, **kwargs):
+        # Recipe is about to be saved - could check here for changed elements
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

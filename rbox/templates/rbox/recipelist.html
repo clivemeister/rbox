@@ -48,50 +48,57 @@
         <br>
         <input type="submit" name="go_filter_receipes">
       </form>
-      <hr>
+
       <p>Showing recipes containing {{ searchstring }}</p>
-      <table>
-        <col style="width:70%">
-        <col style="width:15%">
-        <col style="width:15%">
-        <tr>
-          <th>Name</th>
-          <th>Taste</th>
-          <th>Effort</th>
-        </tr>
-        {% for recipe in recipes_list.all %}
-          <tr>
-            <td>
-              <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
-              <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
-                {{recipe.name}}
-              </a>
-            </td>
-            <td>{{recipe.taste_stars}}</td>
-            <td>{{recipe.effort_stars}}</td>
-          </tr>
-        {%endfor%}
-        </table>
-        <br>
-        <br>
+      <div id="container" style="width:100%">
+        <div id="left" style="float:left; width:50%">
+          <table>
+            <col style="width:70%">
+            <col style="width:15%">
+            <col style="width:15%">
+            <tr>
+              <th>Name</th>
+              <th>Taste</th>
+              <th>Effort</th>
+            </tr>
+            {% for recipe in recipes_list.all %}
+              <tr>
+                <td>
+                  <!-- resolves to /rbox/recipe/{{recipe.id}}/ -->
+                  <a href="{% url 'rbox:recipe-in-detail' recipe.id %}" target="_blank" rel="noreferrer noopener">
+                    {{recipe.name}}
+                  </a>
+                </td>
+                <td>{{recipe.taste_stars}}</td>
+                <td>{{recipe.effort_stars}}</td>
+              </tr>
+            {%endfor%}
+          </table>
+          <br>
+          <br>
+          <div class="pagination">
+            <span class="step-links">
+              {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+              {% endif %}
 
-        <div class="pagination">
-          <span class="step-links">
-            {% if page_obj.has_previous %}
-              <a href="?page=1">&laquo; first</a>
-              <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
+              <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
 
-            <span class="current">
-              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+              {% endif %}
             </span>
-
-            {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number }}">next</a>
-              <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-          </span>
+          </div>
         </div>
-      </ul>
+        <div id="right" style="float:right; width:50%">
+          <iframe src="http://127.0.0.1:8000/rbox/recipe/1/" height="500px" width="500px" Content-Security-Policy: frame-ancestors 'self'>
+            <p>The browser does not support iframes</p>
+          </iframe>
+        </div>
+      </div>
     </body>
   </html>

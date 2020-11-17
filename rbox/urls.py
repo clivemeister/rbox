@@ -16,4 +16,9 @@ urlpatterns = [
     path('recipesearch', views.recipeListView.as_view(), name='recipe-search'),
     # matches /rbox/recipe_add/
     path('recipe/add/',views.recipeCreate.as_view(),name='recipe-add'),
+    # matches /rbox/ingredientlist.html
+    #path('ingredientlist.html',views.ingredientList_addform,name='ingredient-list'),
+    # matches /rbox/recipemodify/1
+    path('recipe_modify/<int:recipe_id>',views.recipe_modify,name='recipe-modify'),
+
 ]

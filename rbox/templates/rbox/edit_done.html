@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta http-equiv="refresh" content="3; url='{{url}}'">
+  </head>
+  <body>
+    <div align='center'>
+        <p>Recipe Updated Successfully</p>
+        <p>Redirecting back to the recipe</p>
+        <div id="countdown"></div>
+    </div>
+  </body>
+  <script>
+    var timeleft = 3;
+    var downloadTimer = setInterval(function(){
+      if(timeleft <= 0){
+        clearInterval(downloadTimer);
+        document.getElementById("countdown").innerHTML = "Finished";
+      } else {
+        document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
+      }
+      timeleft -= 1;
+    }, 1000);
+  </script>
+</html>
