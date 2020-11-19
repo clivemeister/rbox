@@ -34,7 +34,7 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
-HYPEN_LINE_ID=10
+HYPEN_LINE_ID=10   # this is the ingredient show by default - usually the ingredient '-----'
 class IngredientLine(models.Model):
     """IngredientLines are each found in one Recipes, and each refer to zero or one Ingredients
     Each line has an associated Recipe, a line order to show where it appears in that Recipe's ingredient list,
@@ -54,7 +54,13 @@ class IngredientLine(models.Model):
     prep_notes = models.CharField(max_length=200,blank=True,default="")
 
     def __str__(self):
-        return str(self.quantity)+" "+str(self.quantity_unit)+" "+str(self.ingredient)+" "+self.prep_notes
+        s = f"{self.line_order}: " + str(self.ingredient)
+        s += f" <{self.quantity} {self.quantity_unit}> <{self.prep_notes}>"
+        return s
+
+    def save(self, *args, **kwargs):
+        print(f"saving line pk={self.pk}: {self}")
+        super().save(*args, **kwargs)
 
 
 class Recipe(models.Model):
@@ -100,8 +106,14 @@ class Recipe(models.Model):
         return ingredientsList
 
     def save(self, *args, **kwargs):
-        # Recipe is about to be saved - could check here for changed elements
         super().save(*args, **kwargs)
+        # Recipe has been saved - make sure the ingredientLines list is ordered 1..N
+        print("In Recipe Model save - includes updating IngredientLines ")
+        i=1
+        for IL in self.ingredientline_set.order_by('line_order').all():
+            IL.line_order = i
+            IL.save()
+            i+=1
 
     def __str__(self):
         return self.name

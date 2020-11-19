@@ -24,16 +24,46 @@ class IngredientLineForm(ModelForm):
         self.fields['quantity'].widget.attrs.update({'size':6})
         self.fields['quantity_unit'].widget.attrs.update({'size':10})
 
+    def __repr__(self):
+        if self['line_order'].value()==None:
+            return super.__str__(self)
+        s= f"IngredientLine {self['line_order'].value()}: <Ingredient {self['ingredient'].value()}>"
+        s +=f" <qty:{self['quantity'].value()} units:{self['quantity_unit'].value()}> <{self['prep_notes'].value()}>"
+        return s
+"""
+   def updateOrder(self,val):
+        print(type(self['line_order']))
+        print("updating line order from",self['line_order'].value(),"to",val)
+        self.line_order=val
+        print(" line order is now",self['line_order'].value(),"should be",val)
+"""
 
-class IngredientLineFormFormSet(BaseInlineFormSet):
+class IngredientLineFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.queryset = IngredientLine.objects.filter(containing_recipe__name=self.instance.name).order_by('line_order')
+"""
+    def clean(self):
+        print("in IngredientLineFormSet.clean()")
+        print(f"{self.cleaned_data=}")
 
+        #  re-build the line_order into cleaned_data so that they just the values 1..n (for n lines)
+        line_forms={}
+        for form in self.forms:
+            print(f"{form.cleaned_data=}")
+            if form.cleaned_data.get('line_order')!=None:
+                line_forms[form.cleaned_data.get('line_order')]=form
+        i=1
+        for line_order_val in sorted(line_forms):
+            line_forms[line_order_val].updateOrder(i)
+            print(f"{line_forms[line_order_val]=} {i=}")
+            i+=1
+        return True
+"""
 
 class RecipeForm(ModelForm):
     """Form for user to update a recipe.
-    Display version will have a separate embedded formset to handle the ingredient list
+    Display version has a separate embedded formset to handle the ingredient list
     """
     class Meta:
         model = Recipe
@@ -59,5 +89,4 @@ class RecipeForm(ModelForm):
 
     def save(self):
         print("In RecipeForm save")
-        print(self.errors.as_data(),flush=True)
         return super().save(self)
