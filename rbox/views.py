@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.urls import reverse, resolve
 from django.forms import modelformset_factory,ModelForm,inlineformset_factory
+from django.template import loader
 
 from .models import Recipe, IngredientLine, Ingredient, Category
 from .forms import IngredientLineForm, RecipeForm, IngredientLineFormSet
@@ -82,10 +83,48 @@ class recipeListView(generic.ListView):
 
 class recipeCreate(generic.edit.CreateView):
     model = Recipe
-    template_name_suffix = '_create'
+    template_name_suffix = '_create'   # With the the default template name is 'recipe_create.html'
     fields = ['name','instructions',
               'taste_score','effort_score','active_minutes','total_minutes',
               'notes','categories','created','source']
+
+
+def recipe_create(request):
+    print("In recipe_create")
+    IL_FormSet = inlineformset_factory(Recipe, IngredientLine,
+                    form=IngredientLineForm,
+                    formset=IngredientLineFormSet,
+                    extra=8,
+                    can_order=True,
+                    can_delete=True,
+                 )
+    if request.method == 'POST':
+        print("POSTed new recipe")
+        recipe_form = RecipeForm(request.POST)
+        if recipe_form.is_valid():
+            recipe = recipe_form.save()
+            print(f"saved new recipe <{recipe.name}>")
+            ingredients_formset = IL_FormSet(request.POST, instance=recipe)
+            if ingredients_formset.is_valid():
+                #process recipe.cleaned_data as required
+                ingredients_formset.save()
+                print(f"saved {ingredients_formset.total_form_count()} ingredient lines")
+                target_url = reverse('rbox:recipe-modify', args=(recipe.pk,))
+                print("url=",target_url)
+                t = loader.get_template('rbox/edit_done.html')
+                return HttpResponse(t.render({'url':target_url},request), content_type='text/html')
+    else:
+        # GETing the recipe_create page, so pass in empty forms
+        print("GETting recipe_create page - pass in empty forms",flush=True)
+        ingredients_formset = IL_FormSet()
+        recipe_form = RecipeForm()
+
+    context = {
+        'ingredients_formset': ingredients_formset,
+        'recipe' : recipe_form,
+    }
+    return render(request,'rbox/recipe_create.html', context)
+
 
 EXTRA_LINES = 3    # add this many extra lines when user clicks "Add more lines" in form
 def recipe_modify(request,recipe_id):
@@ -118,12 +157,10 @@ def recipe_modify(request,recipe_id):
                 target_url = reverse('rbox:recipe-modify', args=(recipe_id,))
                 print("url=",target_url)
 
-                from django.http import HttpResponse
-                from django.template import loader
                 t = loader.get_template('rbox/edit_done.html')
                 return HttpResponse(t.render({'url':target_url},request), content_type='text/html')
     else:
-        # We are loading a recipe for modification
+        # We are loading a recipe & its ingredient lines for modification
         print("GETting ingredient list and recipe <%s> for editing"%(recipe.name),flush=True)
         ingredients_formset = IL_FormSet(instance=recipe)
         recipe_form = RecipeForm(instance=recipe)

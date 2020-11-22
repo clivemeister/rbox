@@ -80,7 +80,7 @@
               </tr>
             {%endfor%}
           </table>
-          <br><br>
+          <br>
           <div class="pagination">
             <span class="step-links">
               {% if page_obj.has_previous %}
@@ -97,7 +97,9 @@
                 <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
               {% endif %}
             </span>
-          </div>
+          </div> <!-- end of pagination division -->
+          <br>
+          <a class="btn" href="http://127.0.0.1:8000/rbox/recipe/add/" target="_blank">Add new recipe</a>
         </div> <!-- end of left-hand side of view, the table with list of recipes -->
         <div id="right" style="float:right; width:50%">
           <iframe src="" name="view_recipe" height="500px" width="500px" Content-Security-Policy: frame-ancestors 'self'>

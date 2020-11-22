@@ -16,117 +16,13 @@
         <p>{{message}}</p>
       {% endfor %}
     {% endif %}
-
     <form id="ingredientline_set" method="post">
       {%csrf_token%}
       {{ingredients_formset.management_form}}
-
-      <h2>Recipe name: {{recipe.name}}</h2>
-        <div id="ingredientline_set">
-          <table border="0" cellpadding="5" cellspacing="0">
-            <thead>
-              {% if ingredients_formset.can_order %}
-                <th style="text-align:left">Line</th>
-              {%endif%}
-              <th style="text-align:left">Ingredient</th>
-              <th style="text-align:left">Qty</th>
-              <th style="text-align:left">Units</th>
-              <th style="text-align:left">Prep notes</th>
-              {% if ingredients_formset.can_delete %}
-                <th style="text-align:left">Delete</th>
-              {%endif%}
-            </thead>
-            <tbody>
-              {% for ingr_form in ingredients_formset %}
-                <tr>
-                  <td>{{ingr_form.line_order}}</td>
-                  <td>{{ingr_form.ingredient}}</td>
-                  <td>{{ingr_form.quantity}}</td>
-                  <td>{{ingr_form.quantity_unit}}</td>
-                  <td>{{ingr_form.prep_notes}}</td>
-                  {% if ingredients_formset.can_delete %}
-                    <td>{{ingr_form.DELETE}}</td>
-                  {% endif %}
-                  {% for hidden in ingr_form.hidden_fields %}
-                    {{hidden}}
-                  {% endfor %}
-                </tr>
-              {%endfor%}
-            </tbody>
-          </table>
-        </div>
-        <input type="hidden" value="false" name="addlines" id="addlines">
-        <button class="btn" id="add_lines_btn" name="add_lines_btn">Add more lines</button>
-        <script>
-          $(document).ready(function() {
-                  $("#add_lines_btn").on('click',function(event) {
-                   $("#addlines").val("true");
-                 });
-          });
-        </script>
-        <!--script>
-          $('#add_more').click(function() {
-            var form_idx = $('#ingredientline_set-TOTAL_FORMS').val();
-            console.log( $('#ingredientline_set-TOTAL_FORMS') )
-            $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-            $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-          });
-        </script-->
-        <div id="empty_form" style="display:none">
-          <table class='no_error'>
-            {{ingredients_formset.empty_form}}
-          </table>
-        </div>
-        <hr>
-        <h3>Instructions</h3>
-          {{recipe.instructions}}
-        <h4>Notes</h4>
-          {{ recipe.notes}}
-          <br>
-          <label>Taste: {{recipe.taste_score}}
-          </label>
-          &nbsp;&nbsp;
-          <label>Effort: {{recipe.effort_score}}
-          </label>
-        <p><label for="categories">Categories: {{recipe.categories}}</label>
-        </p>
-        <p>
-          <label>Active minutes: {{recipe.active_minutes}}</label>&nbsp;&nbsp;&nbsp;
-          <label>Total minutes: {{recipe.total_minutes}}</label>
-        <p><label for="source">Source: {{recipe.source}}</label>
-        </p>
-        {% for hidden in recipe.hidden_fields %}
-          {{hidden}}
-        {% endfor %}
-
+      {% include "./edit_recipe_with_ingredients.html" %}
       <input type="submit" value="Update recipe" class="button" style="background-color:blanchedalmond"/>
+      &nbsp;&nbsp;
+      <input type="submit" value="Cancel" class="button" style="background-color:blanchedalmond" onclick="window.close()"/>
     </form>
-    <!--
-    <script type="text/javascript">
-        $('#ingredients tbody tr').formset({
-            addText: 'add new ingredient line',
-
-        });
-    </script>
-    -->
-    <!-- sort the select elements into alphabetical order -->
-    <script>
-      function sortDropDownListByText() {
-        // Loop for each select element on the page.
-        $("select").each(function() {
-            // Keep track of the selected option.
-            var selectedValue = $(this).val();
-            // Sort all the options by text. I could easily sort these by val.
-            $(this).html($("option", $(this)).sort(
-                function(a, b) { return a.text == b.text ? 0 : a.text < b.text ? -1 : 1 }
-              )
-            );
-            // Select the right option again
-            $(this).val(selectedValue);
-        });
-      }
-
-      sortDropDownListByText();
-    </script>
   </body>
 </html>
